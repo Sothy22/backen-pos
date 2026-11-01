@@ -4,6 +4,8 @@ FROM php:8.5-fpm-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    openssl \
     git \
     curl \
     unzip \
@@ -16,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
+    && update-ca-certificates \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
