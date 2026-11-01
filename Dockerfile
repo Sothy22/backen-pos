@@ -1,37 +1,54 @@
-# Use PHP image with Debian Bullseye (better OpenSSL support)
-FROM php:8.2-fpm-bullseye
 
-# Install system dependencies and PHP extensions
-RUN apt-get update && apt-get install -y \
+# PHP 8.3 for Laravel 13
+FROM php:8.3-fpm-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
+    unzip \
+    zip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     libssl-dev \
     libcurl4-openssl-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
+    libzip-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install MongoDB extension with SSL/TLS support
+# Install MongoDB PHP extension
 RUN pecl install mongodb \
-    && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
+    && docker-php-ext-enable mongodb
 
 # Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# Copy Laravel project
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install Laravel dependencies
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader
 
-# Expose port for Render
+# Render port
 EXPOSE 10000
 
-# Start Laravel server
-CMD php artisan serve --host=0.0.0.0 --port=10000
+# Start Laravel application
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
