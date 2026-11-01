@@ -1,6 +1,6 @@
 
 # PHP 8.3 for Laravel 13
-FROM php:8.3-fpm-bookworm
+FROM php:8.5-fpm-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
