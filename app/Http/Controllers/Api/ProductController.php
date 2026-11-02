@@ -11,26 +11,7 @@ class ProductController extends Controller
 {
     private function cloudinary(): Cloudinary
     {
-        $cloudName = config('cloudinary.cloud_name');
-        $apiKey = config('cloudinary.api_key');
-        $apiSecret = config('cloudinary.api_secret');
-
-        if (empty($cloudName) || empty($apiKey) || empty($apiSecret)) {
-            throw new \RuntimeException(
-                'Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.'
-            );
-        }
-
-        return new Cloudinary([
-            'cloud' => [
-                'cloud_name' => $cloudName,
-                'api_key' => $apiKey,
-                'api_secret' => $apiSecret,
-            ],
-            'url' => [
-                'secure' => true,
-            ],
-        ]);
+        return new Cloudinary(config('cloudinary.url'));
     }
 
     // ============ CRUD Operation ============
