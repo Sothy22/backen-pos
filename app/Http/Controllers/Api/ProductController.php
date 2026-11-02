@@ -11,7 +11,23 @@ class ProductController extends Controller
 {
     private function cloudinary(): Cloudinary
     {
-        return new Cloudinary(config('cloudinary.url'));
+        $cloudName = config('cloudinary.cloud_name');
+        $apiKey = config('cloudinary.api_key');
+        $apiSecret = config('cloudinary.api_secret');
+
+        if (!$cloudName || !$apiKey || !$apiSecret) {
+            throw new \RuntimeException(
+                'Cloudinary credentials are not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.'
+            );
+        }
+
+        return new Cloudinary([
+            'cloud' => [
+                'cloud_name' => $cloudName,
+                'api_key' => $apiKey,
+                'api_secret' => $apiSecret,
+            ],
+        ]);
     }
 
     // ============ CRUD Operation ============
@@ -45,11 +61,19 @@ class ProductController extends Controller
         ]);
 
         if ($req->hasFile('image')) {
-            // Upload new image
-            $uploaded = $this->cloudinary()->uploadApi()->upload(
-                $req->file('image')->getRealPath(),
-                ['folder' => config('cloudinary.upload_folder', 'img_pos_system')]
-            );
+            try {
+                $uploaded = $this->cloudinary()->uploadApi()->upload(
+                    $req->file('image')->getRealPath(),
+                    ['folder' => config('cloudinary.upload_folder', 'img_pos_system')]
+                );
+            } catch (\Throwable $e) {
+                report($e);
+                return response()->json([
+                    'message' => app()->environment('production')
+                        ? 'Image upload failed. Check the Cloudinary configuration.'
+                        : $e->getMessage(),
+                ], 502);
+            }
             $validate['image_url'] = $uploaded['secure_url'];
             $validate['image_public_id'] = $uploaded['public_id'];
         }
@@ -136,11 +160,19 @@ class ProductController extends Controller
             if (!empty($product->image_public_id)) {
                 $this->cloudinary()->uploadApi()->destroy($product->image_public_id);
             }
-            // Upload new image
-            $uploaded = $this->cloudinary()->uploadApi()->upload(
-                $req->file('image')->getRealPath(),
-                ['folder' => config('cloudinary.upload_folder', 'img_pos_system')]
-            );
+            try {
+                $uploaded = $this->cloudinary()->uploadApi()->upload(
+                    $req->file('image')->getRealPath(),
+                    ['folder' => config('cloudinary.upload_folder', 'img_pos_system')]
+                );
+            } catch (\Throwable $e) {
+                report($e);
+                return response()->json([
+                    'message' => app()->environment('production')
+                        ? 'Image upload failed. Check the Cloudinary configuration.'
+                        : $e->getMessage(),
+                ], 502);
+            }
             $validate['image_url'] = $uploaded['secure_url'];
             $validate['image_public_id'] = $uploaded['public_id'];
         }
