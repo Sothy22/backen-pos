@@ -31,16 +31,6 @@ class ProductController extends Controller
     public function store(Request $req)
     {
 
-        // ====== NO Validation =====
-        // $inputData = [
-        //     "name" => $req->input("name"),
-        //     "description" => $req->input("description"),
-        //     "price" => $req->input("price"),
-        //     "qty" => $req->input("qty"),
-        //     "discount" => $req->input("discount"),
-        //     "status" => $req->input("status"),
-        // ];
-
         // ====== Validation =====
         $validate = $req->validate([
             "name" => "required|string|min:3|max:255|unique:products,name",
@@ -54,10 +44,6 @@ class ProductController extends Controller
             "image" => "nullable|image|mimes:jpg,png,jpeg,gif,webp|max:2048" //2M = 2048 (1M = 1024)
         ]);
 
-        // // Handle inmage upload
-        // if ($req->hasFile("image")) {
-        //     $validate['image'] = $req->file('image')->store('porducts', 'public');
-        // }
         if ($req->hasFile('image')) {
             // Upload new image
             $uploaded = $this->cloudinary()->uploadApi()->upload(
