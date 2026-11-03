@@ -20,7 +20,8 @@ class Product extends Model
         "brand_id",
         "image",
         "image_url",
-        "image_public_id"
+        "image_public_id",
+        "supplier_id"
     ];
 
     public function productDetail()
@@ -34,6 +35,11 @@ class Product extends Model
 
     public function brand(){
         return $this->belongsTo(Brand::class, "brand_id", "_id");
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, "supplier_id", "_id");
     }
 
     public function orderDetail() {

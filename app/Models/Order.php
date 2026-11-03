@@ -14,9 +14,15 @@ class Order extends Model
         "total_amount",
         "remark",
         "payment_method",
+        "customer_id",
     ];
 
     public function orderDetail() {
         return $this->hasMany(OrderDetail::class, 'order_id', '_id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', '_id');
     }
 }

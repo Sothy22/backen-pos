@@ -24,6 +24,7 @@ class OrderController extends Controller
             'total_amount' => 'required|numeric|min:0',
             'remark' => 'nullable|string',
             'payment_method' => 'required|string',
+            'customer_id' => 'nullable|exists:customers,_id',
             'detail' => 'required|array',
             'detail.*.price' => 'required|numeric|min:0',
             'detail.*.qty' => 'required|integer|min:1',
@@ -49,6 +50,7 @@ class OrderController extends Controller
             'total_amount' => (float) $validate['total_amount'],
             'remark' => $validate['remark'] ?? null,
             'payment_method' => $validate['payment_method'],
+            'customer_id' => $validate['customer_id'] ?? null,
         ]);
 
         // create order detail

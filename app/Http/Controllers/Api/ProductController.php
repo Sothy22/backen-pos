@@ -57,6 +57,7 @@ class ProductController extends Controller
             "status" => "required|boolean",
             "category_id" => "required|exists:categories,_id",
             "brand_id" => "required|exists:brands,_id",
+            "supplier_id" => "nullable|exists:suppliers,_id",
             "image" => "nullable|image|mimes:jpg,png,jpeg,gif,webp|max:2048" //2M = 2048 (1M = 1024)
         ]);
 
@@ -142,6 +143,7 @@ class ProductController extends Controller
             "status" => "sometimes|required|boolean",
             "category_id" => "sometimes|required|exists:categories,_id",
             "brand_id" => "sometimes|required|exists:brands,_id",
+            "supplier_id" => "sometimes|nullable|exists:suppliers,_id",
             "image" => "sometimes|nullable|image|mimes:jpg,png,jpeg,gif,webp|max:2048" //2M = 2048 (1M = 1024)
         ]);
 

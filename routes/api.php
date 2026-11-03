@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductDetailController;
 use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\PurchaseController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -75,4 +77,19 @@ Route::prefix("supplier")->group(function () {
     Route::post("/bluk", [SupplierController::class, "storeBluk"]);
     Route::put("/{id}", [SupplierController::class, "update"]);
     Route::delete("/{id}", [SupplierController::class, "destroy"]);
+});
+
+Route::prefix("customer")->group(function () {
+    Route::get("/", [CustomerController::class, "index"]);
+    Route::get("/{id}", [CustomerController::class, "show"]);
+    Route::post("/", [CustomerController::class, "store"]);
+    Route::put("/{id}", [CustomerController::class, "update"]);
+    Route::delete("/{id}", [CustomerController::class, "destroy"]);
+});
+
+Route::prefix("purchase")->group(function () {
+    Route::get("/", [PurchaseController::class, "index"]);
+    Route::get("/{id}", [PurchaseController::class, "show"]);
+    Route::post("/", [PurchaseController::class, "store"]);
+    Route::delete("/{id}", [PurchaseController::class, "destroy"]);
 });
